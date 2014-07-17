@@ -3,6 +3,7 @@ import py2exe
 
 setup(
     options = {'py2exe': {'bundle_files':1, 'compressed': True}},
-    windows = [ {'script': 'audiogen.py'}],
+    #windows = [ {'script': 'audiogen.py'}],
+    console = [ {'script': 'win_audiogen.py'}],
     zipfile = None,
 )

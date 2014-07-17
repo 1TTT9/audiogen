@@ -96,7 +96,7 @@ def main():
     parser = argparse.ArgumentParser(prog="audiogen")
     parser.add_argument('-lt1', '--lt1', help="left top 1", default=1, type=int)
     parser.add_argument('-lt2', '--lt2', help="left top 2", default=1, type=int)
-    parser.add_argument('-1d1', '--ld1', help="left down 1", default=1, type=int)
+    parser.add_argument('-ld1', '--ld1', help="left down 1", default=1, type=int)
     parser.add_argument('-ld2', '--ld2', help="left down 2", default=1, type=int)
     parser.add_argument('-rt1', '--rt1', help="right top 1", default=1, type=int)
     parser.add_argument('-rt2', '--rt2', help="right top 2", default=1, type=int)
