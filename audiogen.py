@@ -5,6 +5,7 @@
 
 
 """
+import shutil
 import time
 import sys
 import wave
@@ -91,6 +92,20 @@ def write_wavefile(filename, samples, nframes=-1, nchannels=2, sampwidth=2, fram
 
 
 def main():
+
+    parser = argparse.ArgumentParser(prog="audiogen")
+    parser.add_argument('-lt1', '--lt1', help="left top 1", default=1, type=int)
+    parser.add_argument('-lt2', '--lt2', help="left top 2", default=1, type=int)
+    parser.add_argument('-1d1', '--ld1', help="left down 1", default=1, type=int)
+    parser.add_argument('-ld2', '--ld2', help="left down 2", default=1, type=int)
+    parser.add_argument('-rt1', '--rt1', help="right top 1", default=1, type=int)
+    parser.add_argument('-rt2', '--rt2', help="right top 2", default=1, type=int)
+    parser.add_argument('-rd1', '--rd1', help="right down 1", default=1, type=int)
+    parser.add_argument('-rd2', '--rd2', help="right down 2", default=1, type=int)
+    parser.add_argument('-sec', '--sec', help="Duration of the wave in seconds.", default=10, type=int)
+    #parser.add_argument('filename', help="The file to generate.")
+    args = parser.parse_args()
+
     """
     test_[freq]_[sampling_rate].wav
      - test_1k_48k.wav cost: 4.515(s)
@@ -98,26 +113,30 @@ def main():
      - test_1k_48k.wav cost: 4.547(s)  #after adding k_switch
     """
     t_start = time.time()
-    fa  = 1000.0
-    fb  = 1000.0
-    a = 1.0
-    secs = 15.0
+    fa1 = 1000
+    fa2 = 15000
+    fb1 = 1000
+    fb2 = 15000
+    a = 0.5
+    secs = args.sec
     bits = 16
     rate = 48000
-    fname = 'test_1_5.wav'
+    fname = 'test_4ch_%d_%d_%s.wav' % (fa1, fa2, secs)
 
     ''' (frequency, sampling_rate, amplitude, on_in_k_switchs, k_switchs) '''
-    params_channels = ( (fa, rate, a, 5, 5), 
-			(fb, rate, a, 5, 5) )
-
     # each channel is defined by infinite functions which are added to produce a sample.
-    channels = ( (sine_wave(freq, rate, amp, on_sw, sw),) for (freq, rate, amp, on_sw, sw) in params_channels  )
-    #channels = ( ( sine_wave(fa, rate, a),), ( sine_wave(fa, rate, a),) )
+    #channels = ( (sine_wave(freq, rate, amp, on_sw, sw),) for (freq, rate, amp, on_sw, sw) in params_channels  )
+    channels = ( ( sine_wave(fa1, rate, a, args.lt1, args.lt2), sine_wave(fa2, rate, a, args.ld1, args.ld2) ), 
+		 ( sine_wave(fb1, rate, a, args.rt1, args.rt2), sine_wave(fb2, rate, a, args.rd1, args.rd2) ) )
 
     # convert the channel functions into waveforms
     samples = compute_samples(channels, rate*secs)
 
-    write_wavefile(fname, samples, rate * secs, 2, bits / 8, rate)
+    #write_wavefile(fname, samples, rate * secs, 2, bits / 8, rate)
+
+    tmpfname = 'tmp.out'
+    write_wavefile(tmpfname, samples)
+    shutil.move(tmpfname, fname)
 
     print fname, "cost: %5.3f(s)" % ( time.time()-t_start )
 
